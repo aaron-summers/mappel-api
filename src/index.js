@@ -14,6 +14,7 @@ const port = process.env.port || 3000;
 const auth = require('../routes/auth');
 const users = require('../routes/users');
 const boards = require('../routes/boards');
+const pins = require('../routes/pins');
 
 //middleware
 app.use(
@@ -28,7 +29,7 @@ app.use(express.json());
 //db connection
 mongoose.connect(
   `${process.env.DB_URL}`,
-  { useNewUrlParser: true, useUnifiedTopology: true },
+  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
   () => {
     console.log("connected to database");
   }
@@ -38,6 +39,7 @@ mongoose.connect(
 app.use('/', auth);
 app.use('/', users);
 app.use('/', boards);
+app.use('/', pins);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`)

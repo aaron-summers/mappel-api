@@ -8,7 +8,8 @@ const boardSchema = new mongoose.Schema({
         max: 255
     },
     description: {
-        content: String,
+        type: String,
+        max: 1024
     },
     pins: [{
         pin: {
@@ -28,9 +29,15 @@ const boardSchema = new mongoose.Schema({
             ref: 'user'
         }
     }],
-    created_at: {
-        type: Date,
-        default: Date.now()
+    created: {
+        person: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user'
+        },
+        datetime: {
+            type: Date,
+            default: Date.now()
+        }
     }
 })
 

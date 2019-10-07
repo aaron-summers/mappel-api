@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 //custom
 const User = require('../models/User');
 const {validateSignup} = require('../functions/validate');
+const verify = require('../middleware/verify');
 
 const checkUsername = (requestedUsername) => {
     return User.findOne({username: requestedUsername});
@@ -18,7 +19,7 @@ const doesEmailExist = (requestedEmail) => {
 router.post('/register', async (req, res) => {
 
     const {error} = validateSignup(req.body);
-    if (error) return res.status(400).send({error: error.details[0].message});
+    if (error) return res.status(400).send({error: "Usernames cannot contain any special characters other than a hyphen or an underscore."});
 
     //unique username check
     const isUsernameTaken = await checkUsername(req.body.username);
@@ -32,8 +33,12 @@ router.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(11);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
+        //lowercase unique username
+        const genUsername = req.body.username.toLowerCase();
+
         const newUser = new User({
-            username: req.body.username,
+            username: genUsername,
+            displayName: req.body.username,
             email: req.body.email,
             password: hashedPassword
         });
@@ -58,5 +63,18 @@ router.post('/register', async (req, res) => {
         res.status(500).send({error: "Oops! Something went wrong."})
     }
 })
+
+//get user by lowercase username
+router.patch('/:username', verify, async (req, res) => {
+    const user = await User.find({username: {'$regex': req.params.username}}, '_id displayName email');
+    if (!user) return res.status(404).send({error: "Not Found."});
+
+    try {
+        res.status(200).send(user)
+    } catch (error) {
+        res.status(500).send({error: "Something went wrong."})
+    }
+
+});
 
 module.exports = router;

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const pinSchema = new mongoose.Schema({
     title: {
         type: String, 
-        required: true,
+        default: "Agenda",
         min: 2,
         max: 512
     },
@@ -11,6 +11,10 @@ const pinSchema = new mongoose.Schema({
         type: String,
         min: 2,
         max: 1024
+    },
+    board: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'board'
     },
     items: [{
         item: {
@@ -28,10 +32,15 @@ const pinSchema = new mongoose.Schema({
             ref: 'comment'
         }
     }],
-    created_at: {
-        type: Date,
-        default: Date.now()
-    },
+    created: {
+        person: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user'
+        },
+        datetime: {
+            type: Date,
+            default: Date.now()
+        }},
     timeline: {
         type: [Date]
     },

@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema({
         required: true,
         min: 2
     },
+    displayName: {
+        type: String
+    },
     email: {
         type: String,
         required: true,
@@ -17,6 +20,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         min: 6
     },
+    contacts: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user'
+        }
+    }],
     date: {
         type: Date,
         default: Date.now()
